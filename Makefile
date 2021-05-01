@@ -1,5 +1,5 @@
 DOCKER ?= $(shell which docker || which podman)
-VERSION = $(shell curl -s https://api.github.com/repos/wabarc/wayback/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed -e 's/v//g')
+VERSION = $(shell curl -s 'https://api.github.com/repos/wabarc/wayback/tags?per_page=1' | grep '"name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed -e 's/v//g')
 
 .PHONY: build
 build:
@@ -14,8 +14,20 @@ srcinfo:
 			sudo -u nobody makepkg --printsrcinfo > .SRCINFO
 
 version:
-	$(shell sed -i 's/pkgver=latest/pkgver=$(VERSION)/g' ./PKGBUILD)
-	$(shell sed -i 's/pkgver = latest/pkgver = $(VERSION)/g' ./.SRCINFO)
+	$(shell sed -Ei 's/pkgver=[0-9]+\.[0-9]+\.[0-9]+/pkgver=$(VERSION)/g' ./PKGBUILD)
+	$(shell sed -Ei 's/pkgver = [0-9]+\.[0-9]+\.[0-9]+/pkgver = $(VERSION)/g' ./.SRCINFO)
+
+publish:
+	$(MAKE) version
+	git checkout main
+	git commit -am "Release v$(VERSION)"
+	git checkout aur
+	git fetch aur master
+	git reset --hard aur/master
+	git checkout main -- .SRCINFO PKGBUILD
+	git commit -am "Release v$(VERSION)"
+	git push aur aur:master
+	git push origin main
 
 clean:
 	rm -rf src/* pkg/* *.tar.zst

@@ -1,0 +1,33 @@
+name: Publish AUR
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [publish]
+
+jobs:
+  publish:
+    name: Publish AUR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build package
+        run: make build
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.AUR_PRIVATE_KEY }}
+
+      - name: Publish package
+        if: ${{ github.event.client_payload.from == 'wabarc/wayback' && github.event.client_payload.channel == 'stable' }}
+        run: |
+          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
+          git remote add aur ssh://aur@aur.archlinux.org/wayback.git
+          git config --local user.email "noreply@github.com"
+          git config --local user.name "GitHub Actions"
+          make publish

@@ -4,8 +4,6 @@ ARG WAYBACK_IPFS_APIKEY
 
 RUN pacman -Syu base-devel git go --noconfirm --overwrite '*'
 
-ENV WAYBACK_IPFS_APIKEY $WAYBACK_IPFS_APIKEY
-
 WORKDIR /aur
 
 COPY . .
@@ -21,7 +19,7 @@ WORKDIR /build
 RUN set -eu pipefail && \
     chmod a+r /build/PKGBUILD && \
     make version && \
-    sudo -u nobody GOPATH=/tmp/go GOCACHE=/tmp/.cache makepkg -sf --noconfirm
+    sudo -u nobody GOPATH=/tmp/go GOCACHE=/tmp/.cache WAYBACK_IPFS_APIKEY=$WAYBACK_IPFS_APIKEY makepkg -sf --noconfirm
 
 RUN chmod a+x /build/entrypoint.sh
 

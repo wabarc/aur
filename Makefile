@@ -1,15 +1,16 @@
 DOCKER ?= $(shell which docker || which podman)
 VERSION = $(shell curl -s 'https://api.github.com/repos/wabarc/wayback/tags?per_page=1' | grep '"name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed -e 's/v//g')
+APIKEY = $(shell echo ${WAYBACK_IPFS_APIKEY})
 
 .PHONY: build
 build:
-	$(DOCKER) build -t builder .
+	$(DOCKER) build --build-arg WAYBACK_IPFS_APIKEY=$(APIKEY) -t builder .
 	$(DOCKER) run --rm -v $(PWD):/aur builder
 
 volume: build
 
 srcinfo:
-	$(DOCKER) build -t builder .
+	$(DOCKER) build --build-arg WAYBACK_IPFS_APIKEY=$(APIKEY) -t builder .
 	$(DOCKER) run --rm -v $(PWD):/aur builder \
 			sudo -u nobody makepkg --printsrcinfo > .SRCINFO
 

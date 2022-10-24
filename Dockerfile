@@ -1,6 +1,10 @@
 FROM archlinux:latest
 
+ARG WAYBACK_IPFS_APIKEY
+
 RUN pacman -Syu base-devel git go --noconfirm --overwrite '*'
+
+ENV WAYBACK_IPFS_APIKEY $WAYBACK_IPFS_APIKEY
 
 WORKDIR /aur
 

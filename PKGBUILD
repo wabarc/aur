@@ -8,6 +8,13 @@ arch=('x86_64')
 url="https://github.com/wabarc/wayback"
 license=('GPL3')
 makedepends=('git' 'go')
+# See https://wiki.archlinux.org/title/PKGBUILD#optdepends
+optdepends=('chromium: capture webpage support'
+            'youtube-dl: download media support'
+            'tor: onion service support'
+            'wget: warc support'
+            'libwebp: convert webp support'
+            'nss: network security service')
 source=('git+https://github.com/wabarc/wayback.git')
 sha256sums=('SKIP')
 

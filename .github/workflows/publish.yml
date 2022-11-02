@@ -19,7 +19,7 @@ jobs:
         run: make build
 
       - name: Set up SSH agent
-        uses: webfactory/ssh-agent@836c84ec59a0e7bc0eabc79988384eb567561ee2 #v0.7.0
+        uses: webfactory/ssh-agent@4512be8010f262a32b74d4b4a59300d76bdd43c6 #v0.7.0
         with:
           ssh-private-key: ${{ secrets.AUR_PRIVATE_KEY }}
 

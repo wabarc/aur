@@ -9,6 +9,8 @@ jobs:
   publish:
     name: Publish AUR
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Check out code base
         uses: actions/checkout@v3

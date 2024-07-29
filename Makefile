@@ -1,17 +1,19 @@
 DOCKER ?= $(shell which docker || which podman)
 VERSION = $(shell curl -s 'https://api.github.com/repos/wabarc/wayback/tags?per_page=1' | grep '"name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed -e 's/v//g')
+TARGET = $(shell echo ${WAYBACK_IPFS_TARGET})
 APIKEY = $(shell echo ${WAYBACK_IPFS_APIKEY})
+SECRET = $(shell echo ${WAYBACK_IPFS_SECRET})
 BUILDER := localhost/wabarc/builder:latest
 
 .PHONY: build
 build:
-	$(DOCKER) build --build-arg WAYBACK_IPFS_APIKEY=$(APIKEY) -t $(BUILDER) .
+	$(DOCKER) build --build-arg WAYBACK_IPFS_TARGET=$(TARGET) --build-arg WAYBACK_IPFS_APIKEY=$(APIKEY) --build-arg WAYBACK_IPFS_SECRET=$(SECRET) -t $(BUILDER) .
 	$(DOCKER) run --rm -v $(PWD):/aur $(BUILDER)
 
 volume: build
 
 srcinfo:
-	$(DOCKER) build --build-arg WAYBACK_IPFS_APIKEY=$(APIKEY) -t $(BUILDER) .
+	$(DOCKER) build --build-arg WAYBACK_IPFS_TARGET=$(TARGET) --build-arg WAYBACK_IPFS_APIKEY=$(APIKEY) --build-arg WAYBACK_IPFS_SECRET=$(SECRET) -t $(BUILDER) .
 	$(DOCKER) run --rm -v $(PWD):/aur $(BUILDER) \
 			sudo -u nobody makepkg --printsrcinfo > .SRCINFO
 
